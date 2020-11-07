@@ -19,7 +19,8 @@ class Schema:
 
         fields = fields[:-2]
 
-        self.conn.execute("CREATE TABLE IF NOT EXISTS " + table_name + " (" + fields + ");")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS " +
+                          table_name + " (" + fields + ");")
 
 
 class Database:
@@ -52,7 +53,6 @@ class Database:
                 "FOREIGN KEY (user) REFERENCES User(id)",
             ]
         )
-            # FOREIGN KEY (id) REFERENCES User(id)
 
     def close_db(self):
         self.conn.close()
