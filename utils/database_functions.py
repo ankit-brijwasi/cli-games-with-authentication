@@ -56,3 +56,10 @@ class Database:
 
     def close_db(self):
         self.conn.close()
+
+
+class Authentication:
+    def __init__(self):
+        self.conn = sqlite3.connect(DATABASE_PATH)
+        self.schema = Schema(self.conn)
+    
