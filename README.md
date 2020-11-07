@@ -16,7 +16,7 @@ After the cloning of project has been done, the below structure will be generate
 Installing the required packages -
 
 1. navigate to the root directory using terminal/Git Bash [To the place where the requirements.txt lives]
-2. run this command -> `pip install -r requirements.txt`
+2. run this command -> `pip install -r requirements.txt`, optionally you can create virtual environment before running this command.
 3. To run the application type this command -> `python main.py`
 
 Git Commands -
@@ -29,13 +29,23 @@ Git Commands -
 
 > `git commit -m "a short description of what you have done"`
 
-> Note that before commiting you must track/stage your changes
+> **Note that**, before commiting you must track/stage your changes
 
 > To push/upload your changes use the following command -
 
-> `git push -u origin master`
+> `git pull origin master`
 
-If you find any diffculty or error, contact to the others and your error will be rectified
+> Execute the next 2 commands only if the origin master branch is ahead of your local master branch, skip to **push command** if you see **Everything is up to date** message-
+
+> `git add .`
+
+> `git commit -m "merged branches"`
+
+> To publis your code -
+
+> `git push origin master`
+
+If you find any diffculties or errors, contact to the team members and we'll try to rectify your queries.
 
 Structure -
 
@@ -68,7 +78,7 @@ Modules -
 
     The project is divided in two parts -
 
-    1. Backend and Database -
+    1. Backend and Databases -
         This module covers all the logics that will be going behind the scenes
         The persons assigned to this module will mainly work in the following folders/files-
             a. utils/database_functions.py [file, To get a biref idea on what this file does refer to the file]
@@ -96,7 +106,7 @@ Modules -
         -> get_user_credentials() --> returns the email and password of the user, takes no arguments
         -> clear() --> clears the screen
 
-        [Remaining functions will be added as the project continues]
+        [More functionalities will be added as the project progresses]
 
         Also, we will be using colorama library to make the interface look different.
         So be sure that you have an idea of colorama.
