@@ -10,27 +10,16 @@ class Schema:
     def __init__(self, conn):
         self.conn = conn
 
-    def create_table(self, table_name: str, fields_list: list):
-        '''Create a table
-        table_name = "Dummy"
-        field_list = [
-            {"id": "INT PRIMARY KEY NOT NULL"},
-            {"name": "TEXT NOT NULL"},
-        ]
-        '''
+    def create_table(self, table_name, fields_list):
+        '''Create a table'''
         fields = ""
 
         for field in fields_list:
-            for key, value in field.items():
-                fields += (str(key) + " " + str(value) + ", ")
+            fields += (str(field) + ", ")
 
         fields = fields[:-2]
 
-        try:
-            self.conn.execute(
-                f"CREATE TABLE IF NOT EXISTS {table_name} ({fields});")
-        except Exception as e:
-            raise str(e)
+        self.conn.execute("CREATE TABLE IF NOT EXISTS " + table_name + " (" + fields + ");")
 
 
 class Database:
@@ -41,7 +30,29 @@ class Database:
         self.schema = Schema(self.conn)
 
     def migrate_db(self):
-        self.schema.create_table()
+
+        # Migrate User Table
+        self.schema.create_table(
+            "User",
+            [
+                "id INTEGER PRIMARY KEY AUTOINCREMENT",
+                "name TEXT NOT NULL",
+                "email TEXT NOT NULL UNIQUE",
+            ]
+        )
+
+        # Migrate User OTP
+        self.schema.create_table(
+            "UserVerfication",
+            [
+                "id INTEGER PRIMARY KEY AUTOINCREMENT",
+                "code TEXT NOT NULL",
+                "verified INTEGER NOT NULL DEFAULT 0",
+                "user INTEGER",
+                "FOREIGN KEY (user) REFERENCES User(id)",
+            ]
+        )
+            # FOREIGN KEY (id) REFERENCES User(id)
 
     def close_db(self):
         self.conn.close()
