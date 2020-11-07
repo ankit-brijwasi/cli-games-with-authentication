@@ -1,5 +1,5 @@
 .vscode
-guessing-game.db
+*.db
 __pycache__/
 
 # Installer logs

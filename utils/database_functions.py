@@ -3,8 +3,7 @@ import os
 import sqlite3
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATABASE_PATH = os.path.join(BASE_DIR, 'guessing-game.db')
-
+DATABASE_PATH = os.path.join(BASE_DIR, 'sqlite3.db')
 
 class Database:
     '''All the functions regarding Database connectivity lives in this class'''

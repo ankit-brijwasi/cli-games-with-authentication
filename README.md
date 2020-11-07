@@ -41,7 +41,7 @@ Git Commands -
 
 > `git commit -m "merged branches"`
 
-> To publis your code -
+> To publish your code -
 
 > `git push origin master`
 
@@ -61,7 +61,7 @@ Structure -
         |-__init__.py
         |-database_functions.py
         |-driver_functions.py
-    |-guessing-game.db
+    |-sqlite3.db
     |-main.py
     |-README.md
     |-requirements.txt
