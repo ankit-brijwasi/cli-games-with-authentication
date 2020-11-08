@@ -21,15 +21,28 @@ class Schema:
 
         self.conn.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({fields});")
 
-    def select_data(self, table_name: str, fields: str, condition: str) -> None:
-        '''performs the SELECT query and returns a list'''
-        rows = self.conn.execute(f"SELECT {fields}  from {table_name} {condition};")
-        return rows.fetchall()
-
     def insert_data(self, table_name: str, fields: str, values: str) -> None:
         '''performs the INSERT query and returns a list'''
         self.conn.execute(f"INSERT INTO  {table_name} ({fields}) VALUES ({values}) ")
         self.conn.commit()
+
+    def select_data(self, table_name: str, fields: str, condition: str) -> None:
+        '''performs the SELECT query and returns a list'''
+        rows = self.conn.execute(f"SELECT {fields}  from {table_name} {condition};")
+        return rows.fetchall()
+    
+    def insert_and_select(self, table_name: str, fields: str, values: str):
+        '''Insert amd return the inserted value'''
+        self.insert_data(table_name, fields, values)
+        
+        condition = "WHERE "
+
+        for key, value in zip(fields.split(","), values.split(",")):
+            condition += f"{key}={value} and "
+        condition = condition[:-5]
+
+        res = self.select_data(table_name, "*", condition)
+        return res
 
 
 class Database:
@@ -100,7 +113,7 @@ class Authentication:
         return hashlib.sha256(string).hexdigest()
 
         
-    def register(self, **kwargs) -> bool:
+    def register(self, **kwargs):
         '''handles the registration'''
         name = kwargs.get("name")
         email = kwargs.get("email")
@@ -109,11 +122,10 @@ class Authentication:
         if self.unique_email(email):
             try:
                 password = self.generate_hash(password) 
-                self.schema.insert_data("User", "name, email, password", f"'{name}', '{email}', '{password}'")
-                return True
+                return self.schema.insert_and_select("User", "name, email, password", f"'{name}', '{email}', '{password}'")
             
             except Exception as e:
                 with open(os.path.join(BASE_DIR, 'logs/register.errors.log'), 'a') as log_file:
                     log_file.write(f"\n[{str(datetime.now())}]: {str(e)}")
         
-        return False
+        return None
