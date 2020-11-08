@@ -37,4 +37,17 @@ if argv == "test_authenticate":
 
     authentication = Authentication()
 
-    authentication.authenticate(email="someone@gmail.com", password="12345")
+    res = authentication.authenticate(email="joshirajesh448@gmail.com", password="Rajeshj3")
+    print(res)
+
+if argv == "test_register":
+    from utils.database_functions import Authentication
+
+    authentication = Authentication()
+    res = authentication.register(name = "Rajesh Joshi",email="joshirajesh448@gmail.com", password="Rajeshj3")
+    print(res)
+
+
+if argv == "get_all_data":
+    db = Database()
+    print(db.get_all_data())

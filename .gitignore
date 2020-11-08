@@ -35,3 +35,5 @@ coverage.xml
 .pytest_cache/
 pytestdebug.log
 *.pyc
+
+logs
