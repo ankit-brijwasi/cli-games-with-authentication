@@ -22,6 +22,18 @@ class Schema:
         self.conn.execute("CREATE TABLE IF NOT EXISTS " +
                           table_name + " (" + fields + ");")
 
+    def select_data(self, table_name, fields, condition):
+        '''performs the SELECT query and returns a list'''
+        rows = self.conn.execute(
+            "SELECT " + fields + " from " + table_name + " " + condition + ";")
+        return rows.fetchall()
+
+    def insert_data(self, table_name, fields, values, condition):
+        '''performs the INSERT query and returns a list'''
+        self.conn.execute(
+            "INSERT INTO" + table_name + " (" + fields + ") "
+            "VALUES( " + values + ") ")
+
 
 class Database:
     '''All the functions regarding Database connectivity lives in this class'''
@@ -39,6 +51,7 @@ class Database:
                 "id INTEGER PRIMARY KEY AUTOINCREMENT",
                 "name TEXT NOT NULL",
                 "email TEXT NOT NULL UNIQUE",
+                "password TEXT NOT NULL",
             ]
         )
 
@@ -62,4 +75,11 @@ class Authentication:
     def __init__(self):
         self.conn = sqlite3.connect(DATABASE_PATH)
         self.schema = Schema(self.conn)
-    
+        self.user = None
+
+    def authenticate(self, **kwargs):
+        email = kwargs.get("email")
+        password = kwargs.get("password")
+
+        self.user = self.schema.get(
+            "User", "*", f"where email='{email}' and password='{password}'")
