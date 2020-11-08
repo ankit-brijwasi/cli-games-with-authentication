@@ -25,7 +25,7 @@ if argv == "migrate":
 if argv == "dropdb":
     print("Deleting database...")
     if os.name == "nt":
-        os.system("rm dir sqlite3.db")
+        os.system("rm sqlite3.db")
     else:
         os.system("rm -rf sqlite3.db")
 
@@ -37,14 +37,16 @@ if argv == "test_authenticate":
 
     authentication = Authentication()
 
-    res = authentication.authenticate(email="joshirajesh448@gmail.com", password="Rajeshj3")
+    res = authentication.authenticate(
+        email="joshirajesh448@gmail.com", password="Rajeshj3")
     print(res)
 
 if argv == "test_register":
     from utils.database_functions import Authentication
 
     authentication = Authentication()
-    res = authentication.register(name = "Rajesh Joshi",email="joshirajesh448@gmail.com", password="Rajeshj3")
+    res = authentication.register(
+        name="Rajesh Joshi", email="joshirajesh448@gmail.com", password="Rajeshj3")
     print(res)
 
 
