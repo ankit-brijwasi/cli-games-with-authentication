@@ -122,7 +122,7 @@ class Authentication:
 
         if self.unique_email(email):
             try:
-                password = self.genate_hash(password)
+                password = self.generate_hash(password)
                 return self.schema.insert_and_select("User", "name, email, password", f"'{name}', '{email}', '{password}'")
 
             except Exception as e:
