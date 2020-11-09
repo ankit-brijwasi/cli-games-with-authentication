@@ -87,21 +87,22 @@ class Database:
 
 
 class Authentication:
+    '''Class to handle Login and Signup'''
+
     def __init__(self):
         self.conn = sqlite3.connect(DATABASE_PATH)
         self.schema = Schema(self.conn)
         self.user = None
 
-    def authenticate(self, **kwargs):
-        '''handle authentication'''
-        email = kwargs.get("email")
-        password = kwargs.get("password")
-
+    def authenticate(self, email: str, password: str):
+        '''handle's authentication and returns the user if exists otherwise returns None'''
+        print("\nlogging in...")
         password = self.generate_hash(password)
-
         self.user = self.schema.select_data(
             "User", "*", f"where email='{email}' and password='{password}'")
-        return self.user
+        if len(self.user) == 0:
+            return None
+        return self.user[0]
 
     def unique_email(self, email: str) -> bool:
         '''check for unique email'''

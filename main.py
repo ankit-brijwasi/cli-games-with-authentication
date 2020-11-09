@@ -38,7 +38,7 @@ if argv == "test_authenticate":
     authentication = Authentication()
 
     res = authentication.authenticate(
-        email="joshirajesh448@gmail.com", password="Rajeshj3")
+        email="jhondoe@example.com", password="jhonDoe")
     print(res)
 
 if argv == "test_register":
@@ -46,7 +46,7 @@ if argv == "test_register":
 
     authentication = Authentication()
     res = authentication.register(
-        name="Rajesh Joshi", email="joshirajesh448@gmail.com", password="Rajeshj3")
+        name="Jhon Doe", email="jhondoe@example.com", password="jhonDoe")
     print(res)
 
 

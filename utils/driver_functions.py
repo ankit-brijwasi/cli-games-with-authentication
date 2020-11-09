@@ -51,15 +51,18 @@ def get_user_credentails(screen: str) -> tuple:
         if valid_email(email):
             password = input("Enter password: ")
             return email, password
-        raise("InvalidEmailError: Please enter a valid email address")
+        print("InvalidEmail: Please enter a valid email address")
+        return get_user_credentails("login")
 
     elif screen == "signup":
         name = input("Enter your name: ")
         email = input("Enter e-mail: ")
         if not valid_email(email):
-            raise("InvalidEmailError: Please enter a valid email address")
+            print("InvalidEmail: Please enter a valid email address")
+            return get_user_credentails("signup")
         password = input("Enter password: ")
         is_valid, reason = valid_password(password)
         if not is_valid:
-            raise(f"InvalidPasswordError: {reason}")
+            print(f"InvalidPassword: {reason}")
+            return get_user_credentails("signup")
         return name, email, password
