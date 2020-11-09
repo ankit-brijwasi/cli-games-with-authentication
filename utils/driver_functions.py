@@ -30,11 +30,12 @@ def get_user_choice() -> int:
 
 
 def valid_email(email: str) -> bool:
+    # check for valid syntax
     return True if "@" in email and "." in email else False
 
 
 def valid_password(password: str) -> tuple:
-    if len(password) >= 6 and len(password) <= 15:
+    if len(password) < 6 and len(password) > 15:
         return False, "Password should be 6 - 15 characters long."
     elif password.isalpha():
         return False, "Password contains only alphabets."
@@ -55,14 +56,14 @@ def get_user_credentails(screen: str) -> tuple:
         return get_user_credentails("login")
 
     elif screen == "signup":
-        name = input("Enter your name: ")
         email = input("Enter e-mail: ")
         if not valid_email(email):
-            print("InvalidEmail: Please enter a valid email address")
+            print("InvalidEmail: Please enter a valid email address\n")
             return get_user_credentails("signup")
+        name = input("Enter your name: ")
         password = input("Enter password: ")
         is_valid, reason = valid_password(password)
         if not is_valid:
-            print(f"InvalidPassword: {reason}")
+            print(f"InvalidPassword: {reason}\n")
             return get_user_credentails("signup")
         return name, email, password

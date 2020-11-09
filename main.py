@@ -39,7 +39,8 @@ if argv == "test_authenticate":
 
     res = authentication.authenticate(
         email="jhondoe@example.com", password="jhonDoe")
-    print(res)
+    print(res.name)
+    print(res.id)
 
 if argv == "test_register":
     from utils.database_functions import Authentication
@@ -47,7 +48,8 @@ if argv == "test_register":
     authentication = Authentication()
     res = authentication.register(
         name="Jhon Doe", email="jhondoe@example.com", password="jhonDoe")
-    print(res)
+    print(res.name)
+    print(res.id)
 
 
 if argv == "get_all_data":

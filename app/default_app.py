@@ -1,6 +1,7 @@
 '''The main application'''
 from utils.driver_functions import clear, get_user_choice
 from app.auth.login import try_login
+from app.auth.signup import try_register
 
 
 def app():
@@ -13,11 +14,15 @@ def app():
 
         if choice == 1:
             user = try_login()
-            print(user)
+            print(user.name)
+            print(user.id)
             break
 
         elif choice == 2:
-            pass
+            user = try_register()
+            print(user.name)
+            print(user.id)
+            break
 
         else:
             break

@@ -5,6 +5,16 @@ import sqlite3
 import hashlib
 
 
+class User:
+    '''All opertions realted to a user are handled here'''
+
+    def __init__(self, *args, **kwargs):
+        self.id = args[0]
+        self.name = args[1]
+        self.email = args[2]
+        self.password = args[3]
+
+
 class Schema:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
@@ -94,7 +104,7 @@ class Authentication:
         self.schema = Schema(self.conn)
         self.user = None
 
-    def authenticate(self, email: str, password: str):
+    def authenticate(self, email: str, password: str) -> User:
         '''handle's authentication and returns the user if exists otherwise returns None'''
         print("\nlogging in...")
         password = self.generate_hash(password)
@@ -102,7 +112,7 @@ class Authentication:
             "User", "*", f"where email='{email}' and password='{password}'")
         if len(self.user) == 0:
             return None
-        return self.user[0]
+        return User(*self.user[0])
 
     def unique_email(self, email: str) -> bool:
         '''check for unique email'''
@@ -115,20 +125,16 @@ class Authentication:
         string = string.encode("utf-8")
         return hashlib.sha256(string).hexdigest()
 
-    def register(self, **kwargs):
+    def register(self, name: str, email: str, password: str) -> User:
         '''handles the registration'''
-        name = kwargs.get("name")
-        email = kwargs.get("email")
-        password = kwargs.get("password")
+        try:
+            password = self.generate_hash(password)
+            user = self.schema.insert_and_select(
+                "User", "name, email, password", f"'{name}', '{email}', '{password}'")
+            return User(*user[0])
 
-        if self.unique_email(email):
-            try:
-                password = self.generate_hash(password)
-                return self.schema.insert_and_select("User", "name, email, password", f"'{name}', '{email}', '{password}'")
-
-            except Exception as e:
-                create_dirs()
-                with open('logs/register.errors.log', 'a') as log_file:
-                    log_file.write(f"\n[{str(datetime.now())}]: {str(e)}")
-
+        except Exception as e:
+            create_dirs()
+            with open('logs/register.errors.log', 'a') as log_file:
+                log_file.write(f"\n[{str(datetime.now())}]: {str(e)}")
         return None
