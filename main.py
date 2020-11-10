@@ -54,4 +54,7 @@ if argv == "test_register":
 
 if argv == "get_all_data":
     db = Database()
-    print(db.get_all_data())
+    print("Gathering data...\n")
+    users, user_verifications = db.get_all_data()
+    print(users)
+    print(user_verifications)

@@ -16,6 +16,7 @@ def app():
             user = try_login()
             print(user.name)
             print(user.id)
+            print(user.verified)
             break
 
         elif choice == 2:

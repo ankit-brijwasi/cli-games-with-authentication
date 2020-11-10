@@ -3,6 +3,7 @@ from datetime import datetime
 from .driver_functions import BASE_DIR, DATABASE_PATH, create_dirs
 import sqlite3
 import hashlib
+import random
 
 
 class User:
@@ -13,6 +14,7 @@ class User:
         self.name = args[1]
         self.email = args[2]
         self.password = args[3]
+        self.verified = True if kwargs.get('verified') == 1 else False
 
 
 class Schema:
@@ -79,7 +81,7 @@ class Database:
 
         # Migrate User OTP
         self.schema.create_table(
-            "UserVerfication",
+            "UserVerification",
             [
                 "id INTEGER PRIMARY KEY AUTOINCREMENT",
                 "code TEXT NOT NULL",
@@ -90,7 +92,10 @@ class Database:
         )
 
     def get_all_data(self):
-        return self.schema.select_data("User", "*", "")
+        users = self.schema.select_data("User", "*", "")
+        user_verifications = self.schema.select_data(
+            "UserVerification", "*", "")
+        return users, user_verifications
 
     def close_db(self):
         self.conn.close()
@@ -102,17 +107,25 @@ class Authentication:
     def __init__(self):
         self.conn = sqlite3.connect(DATABASE_PATH)
         self.schema = Schema(self.conn)
-        self.user = None
 
     def authenticate(self, email: str, password: str) -> User:
         '''handle's authentication and returns the user if exists otherwise returns None'''
         print("\nlogging in...")
         password = self.generate_hash(password)
-        self.user = self.schema.select_data(
-            "User", "*", f"where email='{email}' and password='{password}'")
-        if len(self.user) == 0:
+        user = self.schema.select_data(
+            table_name="User",
+            fields="*",
+            condition=f"where email='{email}' and password='{password}'"
+        )
+        if len(user) == 0:
             return None
-        return User(*self.user[0])
+        user = user[0]
+        user_verified = self.schema.select_data(
+            table_name="UserVerification",
+            fields="verified",
+            condition=f"where user='{user[0]}'"
+        )[0]
+        return User(*user, verified=user_verified[0])
 
     def unique_email(self, email: str) -> bool:
         '''check for unique email'''
@@ -129,12 +142,23 @@ class Authentication:
         '''handles the registration'''
         try:
             password = self.generate_hash(password)
+
             user = self.schema.insert_and_select(
-                "User", "name, email, password", f"'{name}', '{email}', '{password}'")
-            return User(*user[0])
+                table_name="User",
+                fields="name, email, password",
+                values=f"'{name}', '{email}', '{password}'"
+            )[0]
+
+            user_verfication = self.schema.insert_and_select(
+                table_name="UserVerification",
+                fields="code, user",
+                values=f"'{random.randint(1000, 9999)}', '{user[0]}'"
+            )[0]
+            return User(*user, verified=user_verfication[1])
 
         except Exception as e:
             create_dirs()
+            print("error occurred! Please check the logs")
             with open('logs/register.errors.log', 'a') as log_file:
                 log_file.write(f"\n[{str(datetime.now())}]: {str(e)}")
         return None
