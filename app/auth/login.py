@@ -7,6 +7,6 @@ def try_login() -> User:
     authentication = Authentication()
     user = authentication.authenticate(email, password)
     if not user:
-        print("\Incorrect email or password!")
+        print("Incorrect email or password!")
         return try_login()
     return user

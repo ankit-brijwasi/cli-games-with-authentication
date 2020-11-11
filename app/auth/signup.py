@@ -12,6 +12,6 @@ def try_register() -> User:
 
     user = authentication.register(name, email, password)
     if not user:
-        print("\Incorrect email or password!")
+        print("Incorrect email or password!")
         return try_register()
     return user

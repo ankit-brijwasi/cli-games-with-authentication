@@ -51,6 +51,13 @@ if argv == "test_register":
     print(res.name)
     print(res.id)
 
+if argv == "test_email":
+    from utils.driver_functions import send_mail
+
+    send_mail(
+        email_to="abrijwasi1@gmail.com",
+        subject="Test Email",
+        message='<h1>This is a test email</h1>')
 
 if argv == "get_all_data":
     db = Database()
