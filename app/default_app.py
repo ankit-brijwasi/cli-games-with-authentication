@@ -18,8 +18,6 @@ def app():
 
         elif choice == 2:
             user = try_register()
-            print(user.name)
-            print(user.id)
             break
         
         elif choice == 3:

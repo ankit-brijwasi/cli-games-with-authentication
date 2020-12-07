@@ -185,3 +185,4 @@ class Authentication:
             table_name="UserVerification",
             fields_and_values="verified=1",
             condition=f"WHERE user={user[0]} and code={otp}")
+        return User(*user, verified=1)

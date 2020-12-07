@@ -39,7 +39,7 @@ def valid_email(email: str) -> bool:
 
 
 def valid_password(password: str) -> tuple:
-    if len(password) < 6 and len(password) > 15:
+    if len(password) < 6 or len(password) > 15:
         return False, "Password should be 6 - 15 characters long."
     elif password.isalpha():
         return False, "Password contains only alphabets."
@@ -85,6 +85,7 @@ def send_mail(email_to: str, subject: str, message: str):
     message = Mail(
         from_email='cli-games@patmui.com',
         to_emails=email_to,
+        # PASSWORD: pobraphcifuymisv
         subject=subject,
         html_content=message)
     try:

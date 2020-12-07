@@ -1,8 +1,11 @@
 from utils.database_functions import Authentication, User
 from utils.driver_functions import get_user_credentails
 
+from utils.driver_functions import clear
 
 def try_register() -> User:
+    clear()
+    print("SIGNUP".center(50, "-"))
     authentication = Authentication()
     name, email, password = get_user_credentails("signup")
 
