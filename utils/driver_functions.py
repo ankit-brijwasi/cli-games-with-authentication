@@ -72,6 +72,13 @@ def get_user_credentails(screen: str) -> tuple:
             return get_user_credentails("signup")
         return name, email, password
 
+    elif screen == "otp":
+        email = input("Enter e-mail: ")
+        if not valid_email(email):
+            print("InvalidEmail: Please enter a valid email address\n")
+            return get_user_credentails("otp")
+        otp = input("Enter OTP: ")
+        return email, otp
 
 def send_mail(email_to: str, subject: str, message: str):
     '''function to send emails'''

@@ -34,19 +34,19 @@ class Schema:
             f"CREATE TABLE IF NOT EXISTS {table_name} ({fields});")
 
     def insert_data(self, table_name: str, fields: str, values: str) -> None:
-        '''performs the INSERT query and returns a list'''
+        '''performs the INSERT query'''
         self.conn.execute(
             f"INSERT INTO  {table_name} ({fields}) VALUES ({values}) ")
         self.conn.commit()
 
-    def select_data(self, table_name: str, fields: str, condition: str) -> None:
+    def select_data(self, table_name: str, fields: str, condition: str):
         '''performs the SELECT query and returns a list'''
         rows = self.conn.execute(
-            f"SELECT {fields}  from {table_name} {condition};")
+            f"SELECT {fields} from {table_name} {condition};")
         return rows.fetchall()
 
     def insert_and_select(self, table_name: str, fields: str, values: str):
-        '''Insert amd return the inserted value'''
+        '''Insert and return the inserted value'''
         self.insert_data(table_name, fields, values)
 
         condition = "WHERE "
@@ -57,6 +57,17 @@ class Schema:
 
         res = self.select_data(table_name, "*", condition)
         return res
+
+    def update_data(self, table_name: str, fields_and_values: str, condition: str):
+        '''performs the UPDATE query'''
+        self.conn.execute(
+            f"UPDATE {table_name} SET {fields_and_values} {condition}")
+        self.conn.commit()
+
+    def update_and_select(self, table_name: str, fields_and_values: str, condition: str):
+        '''Updates data and returns the updated columns'''
+        self.update_data(table_name, fields_and_values, condition)
+        return self.select_data(table_name=table_name, fields="*", condition=condition)
 
 
 class Database:
@@ -162,3 +173,15 @@ class Authentication:
             with open('logs/register.errors.log', 'a') as log_file:
                 log_file.write(f"\n[{str(datetime.now())}]: {str(e)}")
         return None
+
+    def verify_email(self, otp: int, email: str) -> User:
+        user = self.schema.select_data(
+            table_name="User", fields="*", condition=f"WHERE email='{email}'")
+
+        if len(user) == 0:
+            return None
+        user = user[0]
+        self.schema.update_data(
+            table_name="UserVerification",
+            fields_and_values="verified=1",
+            condition=f"WHERE user={user[0]} and code={otp}")
