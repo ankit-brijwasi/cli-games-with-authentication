@@ -1,7 +1,10 @@
 from utils.database_functions import Authentication, User
 from utils.driver_functions import get_user_credentails
+from app.auth.otp_verification import otp_verification
 
 from utils.driver_functions import clear
+
+from time import sleep
 
 def try_register() -> User:
     clear()
@@ -17,4 +20,9 @@ def try_register() -> User:
     if not user:
         print("Incorrect email or password!")
         return try_register()
-    return user
+    print("OTP sent...")
+    sleep(0.7)
+    print("Switching to OTP screen...")
+    sleep(1.2)
+    clear()
+    return otp_verification()

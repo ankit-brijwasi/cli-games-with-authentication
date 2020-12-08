@@ -1,6 +1,6 @@
 '''The code for the backend and all the logics lives here'''
 from datetime import datetime
-from .driver_functions import BASE_DIR, DATABASE_PATH, create_dirs
+from .driver_functions import BASE_DIR, DATABASE_PATH, create_dirs, send_mail
 import sqlite3
 import hashlib
 import random
@@ -160,11 +160,20 @@ class Authentication:
                 values=f"'{name}', '{email}', '{password}'"
             )[0]
 
+            otp = random.randint(1000, 9999)
             user_verfication = self.schema.insert_and_select(
                 table_name="UserVerification",
                 fields="code, user",
-                values=f"'{random.randint(1000, 9999)}', '{user[0]}'"
+                values=f"'{otp}', '{user[0]}'"
             )[0]
+            print("Sending OTP..")
+            body = f"Hey, Thank you for showing your interese in our Application.\n\nYour One Time Password (OTP) is {otp}\n\nThank you\nTeam Pythonera"
+            sent, err = send_mail(email_to=email, subject="Verify your email", body=body)
+
+            if err:
+                print("Error while sending OTP")
+                print(err)
+
             return User(*user, verified=user_verfication[1])
 
         except Exception as e:
