@@ -51,6 +51,7 @@ def game(user: User) -> None:
     user.entered_match()
     computer_number = random.randint(1, 100)
     i = 1
+    print(computer_number)
     while True:
         if i >= 6:
             user.lost_game()

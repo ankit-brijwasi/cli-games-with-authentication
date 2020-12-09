@@ -152,7 +152,7 @@ class User:
         won = games_woned + 1
         schema.update_data(
             table_name="UserProfile",
-            fields_and_values="games_woned={}".format(won),
+            fields_and_values="games_woned='{}'".format(won),
             condition="WHERE user={}".format(self.id)
         )
 
@@ -162,7 +162,7 @@ class User:
         lost = games_losed + 1
         schema.update_data(
             table_name="UserProfile",
-            fields_and_values="games_losed={}".format(lost),
+            fields_and_values="games_losed='{}'".format(lost),
             condition="WHERE user={}".format(self.id)
         )
 
@@ -172,7 +172,7 @@ class User:
         played = games_played + 1
         schema.update_data(
             table_name="UserProfile",
-            fields_and_values="games_losed={}".format(played),
+            fields_and_values="games_played='{}'".format(played),
             condition="WHERE user={}".format(self.id)
         )
 

@@ -5,15 +5,20 @@ from utils.database_functions import User
 from utils.driver_functions import clear, get_user_choice
 
 
+def get_choice(message: str) -> str:
+    print("\n{} (y/n)".format(message))
+    return input(">> ")
+
+
 def play_game(user: User) -> None:
     clear()
     game_screen()
     game(user)
-
-
-def get_choice(message: str) -> str:
-    print("\n{} (y/n)".format(message))
-    return input(">> ")
+    choice = get_choice(message="Play again ?")
+    if choice == "y" or choice == "Y":
+        return play_game(user)
+    else:
+        return welcome_screen(user)
 
 
 def show_profile(user: User, profile: dict) -> None:
@@ -35,11 +40,6 @@ def welcome_screen(user: User) -> None:
 
     if choice == 1:
         play_game(user)
-        choice = get_choice(message="Play again ?")
-        if choice == "y" or choice == "Y":
-            return play_game(user)
-        else:
-            return welcome_screen(user)
 
     elif choice == 2:
         clear()
