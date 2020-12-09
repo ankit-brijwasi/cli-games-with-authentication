@@ -85,6 +85,7 @@ def get_user_credentails(screen: str) -> tuple:
         otp = input("Enter OTP: ")
         return email, otp
 
+
 def send_mail(**kwargs):
     '''function to send emails'''
 
@@ -92,8 +93,9 @@ def send_mail(**kwargs):
     gmail_password = 'pobraphcifuymisv'
 
     sent_from = gmail_user
-    
-    email_text = str(f"From:{sent_from}\nTo:{kwargs.get('email_to')}\nSubject:{kwargs.get('subject')}\n\n{kwargs.get('body')}")
+
+    email_text = str(
+        f"From:{sent_from}\nTo:{kwargs.get('email_to')}\nSubject:{kwargs.get('subject')}\n\n{kwargs.get('body')}")
 
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     server.ehlo()

@@ -6,17 +6,6 @@ import hashlib
 import random
 
 
-class User:
-    '''All opertions realted to a user are handled here'''
-
-    def __init__(self, *args, **kwargs):
-        self.id = args[0]
-        self.name = args[1]
-        self.email = args[2]
-        self.password = args[3]
-        self.verified = True if kwargs.get('verified') == 1 else False
-
-
 class Schema:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
@@ -102,14 +91,90 @@ class Database:
             ]
         )
 
+        # Migrate User Profile
+        self.schema.create_table(
+            "UserProfile",
+            [
+                "id INTEGER PRIMARY KEY AUTOINCREMENT",
+                "games_played INTEGER NOT NULL DEFAULT 0",
+                "games_woned INTEGER NOT NULL DEFAULT 0",
+                "games_losed INTEGER NOT NULL DEFAULT 0",
+                "user INTEGER",
+                "FOREIGN KEY (user) REFERENCES User(id)",
+            ]
+        )
+
     def get_all_data(self):
         users = self.schema.select_data("User", "*", "")
         user_verifications = self.schema.select_data(
             "UserVerification", "*", "")
-        return users, user_verifications
+        user_profile = self.schema.select_data(
+            "UserProfile", "*", "")
+        return users, user_verifications, user_profile
 
     def close_db(self):
         self.conn.close()
+
+
+class User:
+    '''All opertions realted to a user are handled here'''
+
+    def __init__(self, *args, **kwargs):
+        self.id = args[0]
+        self.name = args[1]
+        self.email = args[2]
+        self.password = args[3]
+        self.verified = True if kwargs.get('verified') == 1 else False
+
+    def get_user_profile(self) -> dict:
+        self.conn = sqlite3.connect(DATABASE_PATH)
+        schema = Schema(conn=self.conn)
+        user_profile = schema.select_data(
+            table_name="UserProfile",
+            fields="games_played, games_woned, games_losed",
+            condition="WHERE user='{}'".format(self.id)
+        )
+        if len(user_profile) == 0:
+            return {
+                'games_played': 0,
+                'games_woned': 0,
+                'games_losed': 0,
+            }
+        return {
+            'games_played': user_profile[0][0],
+            'games_woned': user_profile[0][1],
+            'games_losed': user_profile[0][2],
+        }
+
+    def won_game(self) -> None:
+        games_woned = self.get_user_profile().get('games_woned')
+        schema = Schema(conn=self.conn)
+        won = games_woned + 1
+        schema.update_data(
+            table_name="UserProfile",
+            fields_and_values="games_woned={}".format(won),
+            condition="WHERE user={}".format(self.id)
+        )
+
+    def lost_game(self) -> None:
+        games_losed = self.get_user_profile().get('games_losed')
+        schema = Schema(conn=self.conn)
+        lost = games_losed + 1
+        schema.update_data(
+            table_name="UserProfile",
+            fields_and_values="games_losed={}".format(lost),
+            condition="WHERE user={}".format(self.id)
+        )
+
+    def entered_match(self) -> None:
+        games_played = self.get_user_profile().get('games_played')
+        schema = Schema(conn=self.conn)
+        played = games_played + 1
+        schema.update_data(
+            table_name="UserProfile",
+            fields_and_values="games_losed={}".format(played),
+            condition="WHERE user={}".format(self.id)
+        )
 
 
 class Authentication:
@@ -126,7 +191,7 @@ class Authentication:
         user = self.schema.select_data(
             table_name="User",
             fields="*",
-            condition=f"where email='{email}' and password='{password}'"
+            condition=f"WHERE email='{email}' and password='{password}'"
         )
         if len(user) == 0:
             return None
@@ -134,13 +199,13 @@ class Authentication:
         user_verified = self.schema.select_data(
             table_name="UserVerification",
             fields="verified",
-            condition=f"where user='{user[0]}'"
+            condition=f"WHERE user='{user[0]}'"
         )[0]
         return User(*user, verified=user_verified[0])
 
     def unique_email(self, email: str) -> bool:
         '''check for unique email'''
-        res = self.schema.select_data("User", "id", f"where email='{email}'")
+        res = self.schema.select_data("User", "id", f"WHERE email='{email}'")
         if len(res):
             return False
         return True
@@ -168,7 +233,8 @@ class Authentication:
             )[0]
             print("Sending OTP..")
             body = f"Hey, Thank you for showing your interese in our Application.\n\nYour One Time Password (OTP) is {otp}\n\nThank you\nTeam Pythonera"
-            sent, err = send_mail(email_to=email, subject="Verify your email", body=body)
+            sent, err = send_mail(
+                email_to=email, subject="Verify your email", body=body)
 
             if err:
                 print("Error while sending OTP")
@@ -185,7 +251,10 @@ class Authentication:
 
     def verify_email(self, otp: int, email: str) -> User:
         user = self.schema.select_data(
-            table_name="User", fields="*", condition=f"WHERE email='{email}'")
+            table_name="User, UserVerification",
+            fields="*",
+            condition=f"WHERE User.email='{email}' and UserVerification.code='{otp}' and UserVerification.verified=0"
+        )
 
         if len(user) == 0:
             return None
@@ -193,5 +262,12 @@ class Authentication:
         self.schema.update_data(
             table_name="UserVerification",
             fields_and_values="verified=1",
-            condition=f"WHERE user={user[0]} and code={otp}")
+            condition=f"WHERE user={user[0]} and code='{otp}'")
+
+        self.schema.insert_data(
+            table_name="UserProfile",
+            fields="user",
+            values=f"'{user[0]}'"
+        )
+
         return User(*user, verified=1)

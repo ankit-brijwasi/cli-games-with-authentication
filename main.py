@@ -62,6 +62,7 @@ if argv == "test_email":
 if argv == "get_all_data":
     db = Database()
     print("Gathering data...\n")
-    users, user_verifications = db.get_all_data()
+    users, user_verifications, user_profile = db.get_all_data()
     print(users)
     print(user_verifications)
+    print(user_profile)
