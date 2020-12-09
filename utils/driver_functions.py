@@ -1,16 +1,19 @@
 '''The Driver code and all the user interaction lives here'''
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email, Content
-from datetime import datetime
-from pathlib import Path
 import getpass
 import os
 import smtplib
 
+from datetime import datetime
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASE_PATH = BASE_DIR / 'sqlite3.db'
 
+error = lambda string: print("\033[91m{}\033[00m".format(string))
+success = lambda string: print("\033[92m{}\033[00m".format(string))
+warning = lambda string: print("\033[93m{}\033[00m".format(string))
+primary = lambda string: print("\033[96m{}\033[00m".format(string))
+secondary = lambda string: print("\033[95m{}\033[00m".format(string))
 
 def get_os() -> str:
     '''function to get the operating system'''
@@ -32,7 +35,11 @@ def clear() -> None:
 
 def get_user_choice() -> int:
     '''fuction to get the user's choice'''
-    return int(input(">> "))
+    try:
+        return int(input(">> "))
+    except Exception:
+        error("Please enter a number")
+        return get_user_choice()
 
 
 def valid_email(email: str) -> bool:
@@ -59,7 +66,7 @@ def get_user_credentails(screen: str) -> tuple:
         if valid_email(email):
             password = getpass.getpass(prompt="Enter password: ")
             return email, password
-        print("InvalidEmail: Please enter a valid email address")
+        error("InvalidEmail: Please enter a valid email address")
         return get_user_credentails("login")
 
     elif screen == "signup":
@@ -67,12 +74,12 @@ def get_user_credentails(screen: str) -> tuple:
         email = input("Enter e-mail: ")
         email = email.lower()
         if not valid_email(email):
-            print("InvalidEmail: Please enter a valid email address\n")
+            error("InvalidEmail: Please enter a valid email address\n")
             return get_user_credentails("signup")
         password = getpass.getpass(prompt="Enter password: ")
         is_valid, reason = valid_password(password)
         if not is_valid:
-            print(f"InvalidPassword: {reason}\n")
+            error(f"InvalidPassword: {reason}\n")
             return get_user_credentails("signup")
         return name, email, password
 
@@ -80,7 +87,7 @@ def get_user_credentails(screen: str) -> tuple:
         email = input("Enter e-mail: ")
         email = email.lower()
         if not valid_email(email):
-            print("InvalidEmail: Please enter a valid email address\n")
+            error("InvalidEmail: Please enter a valid email address\n")
             return get_user_credentails("otp")
         otp = input("Enter OTP: ")
         return email, otp

@@ -2,11 +2,11 @@ import time
 
 from app.core.game import game, game_screen
 from utils.database_functions import User
-from utils.driver_functions import clear, get_user_choice
+from utils.driver_functions import clear, get_user_choice, success, warning, primary
 
 
 def get_choice(message: str) -> str:
-    print("\n{} (y/n)".format(message))
+    warning("\n{} (y/n)".format(message))
     return input(">> ")
 
 
@@ -22,18 +22,18 @@ def play_game(user: User) -> None:
 
 
 def show_profile(user: User, profile: dict) -> None:
-    print("Profile Information".center(50, '-'))
-    print("Name: ", user.name)
-    print("E-mail: ", user.email)
-    print("Matches Played: ", profile.get('games_played', 0))
-    print("Matches Won: ", profile.get('games_woned', 0))
-    print("Matches Lost: ", profile.get('games_losed', 0))
+    primary("Profile Information".center(50, '-'))
+    primary(f"Name: {user.name}")
+    primary(f"E-mail: {user.email}")
+    primary(f"Matches Played: {profile.get('games_played', 0)}")
+    primary(f"Matches Won: {profile.get('games_woned', 0)}")
+    primary(f"Matches Lost: {profile.get('games_losed', 0)}")
 
 
 def welcome_screen(user: User) -> None:
     clear()
-    print("Welcome to the Application".center(50, "-"))
-    print("Select your choice\n")
+    primary("Welcome to the Application".center(50, "-"))
+    primary("Select your choice\n")
     print("1 Play the Game \n2 Check your info\n3 Logout\n")
 
     choice = get_user_choice()
@@ -45,14 +45,14 @@ def welcome_screen(user: User) -> None:
         clear()
         profile_info = user.get_user_profile()
         show_profile(user, profile=profile_info)
-        key = input("Press ENTER key to go back...")
+        _ = input("Press any key to go back...")
         return welcome_screen(user)
 
     elif choice == 3:
-        print("Logging out...")
+        success("Logging out...")
         time.sleep(2)
 
     else:
-        print("You pressed wrong key")
+        warning("You pressed wrong key")
         time.sleep(2)
         return welcome_screen(user)

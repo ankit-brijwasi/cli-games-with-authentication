@@ -1,7 +1,7 @@
 '''The main application'''
 import time
 
-from utils.driver_functions import clear, get_user_choice
+from utils.driver_functions import clear, get_user_choice, warning
 
 from app.auth.login import try_login
 from app.auth.otp_verification import otp_verification
@@ -32,6 +32,7 @@ def app():
             welcome_screen(user)
 
         else:
-            print("Invalid Choice")
+            warning("Invalid Choice")
+            print("Returning back to the previous screen...")
             time.sleep(2)
             continue

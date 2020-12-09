@@ -1,9 +1,10 @@
 '''The code for the backend and all the logics lives here'''
-from datetime import datetime
-from .driver_functions import BASE_DIR, DATABASE_PATH, create_dirs, send_mail
-import sqlite3
 import hashlib
 import random
+import sqlite3
+from datetime import datetime
+
+from .driver_functions import BASE_DIR, DATABASE_PATH, create_dirs, send_mail, error
 
 
 class Schema:
@@ -233,18 +234,17 @@ class Authentication:
             )[0]
             print("Sending OTP..")
             body = f"Hey, Thank you for showing your interese in our Application.\n\nYour One Time Password (OTP) is {otp}\n\nThank you\nTeam Pythonera"
-            sent, err = send_mail(
+            _, err = send_mail(
                 email_to=email, subject="Verify your email", body=body)
 
             if err:
-                print("Error while sending OTP")
-                print(err)
-
+                error("Error while sending OTP")
+                error("details: {}".format(err))
             return User(*user, verified=user_verfication[1])
 
         except Exception as e:
             create_dirs()
-            print("error occurred! Please check the logs")
+            error("error occurred! Please check the logs")
             with open('logs/register.errors.log', 'a') as log_file:
                 log_file.write(f"\n[{str(datetime.now())}]: {str(e)}")
         return None
